@@ -1,0 +1,35 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment
+.env
+.venv/
+env/
+venv/
+ENV/
+*.env
+
+# macOS system files
+.DS_Store
+
+# Selenium screenshots (optional)
+screenshot_attempt_*.png
+
+# VS Code settings (optional)
+.vscode/
+
+# Logs
+*.log
+
+# Jupyter notebooks (if used)
+.ipynb_checkpoints/
+
+# PyCharm files (if you use PyCharm)
+.idea/
+
+# Local database or output files (if any)
+*.sqlite3
+*.db
+output.csv
