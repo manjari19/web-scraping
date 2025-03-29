@@ -7,7 +7,7 @@ on:
     branches:
       - main
   schedule:
-     - cron: '*/5 * * * *'  # Every 5 minutes
+     - cron: '* * * * *'  # Every 5 minutes
 
 
 
