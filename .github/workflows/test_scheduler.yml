@@ -2,11 +2,12 @@ name: Test Scheduler
 
 on:
   schedule:
-    - cron: '*/2 * * * *' # Every 2 minutes
+    - cron: '*/2 * * * *'  # Every 2 minutes
+  workflow_dispatch:        # Allow manual trigger
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: Log time
-        run: 'echo "⏰ Hello! Time now: $(date -u)"'
+        run: 'echo "⏰ Hello! Time now: $(date -u)'
