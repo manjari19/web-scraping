@@ -106,6 +106,7 @@ def check_for_table_records():
                     rows = table.find_all('tr')
                     if len(rows) > 1:
                         send_sms(f"📋 Records found! Number of rows: {len(rows) - 1}")
+                        print("📋 Records found! Number of rows: {len(rows) - 1}")
                     else:
                         print("📭 No new records found.")
                 else:
