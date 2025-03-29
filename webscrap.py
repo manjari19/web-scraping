@@ -61,7 +61,7 @@ def check_for_table_records():
         for attempt in range(retry_count):
             try:
                 print("Navigating to login page...")
-                driver.get("https://bc38.atrieveerp.com/authenticationservice-Coquitlam/Account/Login")
+                driver.get("https://bc38.atrieveerp.com/authenticationservice-Coquitlam/Account/Login?ReturnUrl=%2Fauthenticationservice-Coquitlam%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Ddotnetportalclient%26redirect_uri%3Dhttps%253A%252F%252Fbc38.atrieveerp.com%252Fcoquitlam%252Fpublic%252FExternalLogin.aspx%26response_type%3Dcode%2520id_token%26scope%3Dopenid%2520profile%2520offline_access%26state%3DNjM4Nzg3ODYzNTcyOTI3NDIzNTU0NjM0MTAx%26responseMode%3Dfragment%26nonce%3DNjM4Nzg3ODYzNTcyOTI3NDIzNTU0NjM0MTAx")
 
                 WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.ID, 'Username')))
                 print("Login page loaded.")
