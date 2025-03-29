@@ -10,7 +10,6 @@ from twilio.rest import Client
 from dotenv import load_dotenv
 import os
 import time
-import shutil
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,20 +23,17 @@ your_phone_number = os.getenv("YOUR_PHONE")
 client = Client(account_sid, auth_token)
 
 def send_sms(message):
-    print(f"Simulated SMS: {message}")
+    short_msg = message if len(message) <= 1500 else message[:1500] + "..."
+    print(f"Simulated SMS: {short_msg}")
     # To actually send SMS, uncomment below:
-    # client.messages.create(
-    #     body=message,
-    #     from_=twilio_phone_number,
-    #     to=your_phone_number
-    # )
+    client.messages.create(
+        body=short_msg,
+        from_=twilio_phone_number,
+        to=your_phone_number
+     )
 
 def get_chrome_driver_path():
-    # Try common Homebrew location
-    chrome_path = shutil.which("chromedriver")
-    if chrome_path:
-        return chrome_path
-    raise FileNotFoundError("ChromeDriver not found. Install it using Homebrew: `brew install --cask chromedriver`")
+    return "/opt/homebrew/bin/chromedriver"
 
 def check_for_table_records():
     driver = None
@@ -60,13 +56,13 @@ def check_for_table_records():
         for attempt in range(retry_count):
             try:
                 print("Navigating to login page...")
-                driver.get("REPLACE_ME_WITH_LOGIN_URL")
+                driver.get("https://bc38.atrieveerp.com/authenticationservice-Coquitlam/Account/Login?ReturnUrl=%2Fauthenticationservice-Coquitlam%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Ddotnetportalclient%26redirect_uri%3Dhttps%253A%252F%252Fbc38.atrieveerp.com%252Fcoquitlam%252Fpublic%252FExternalLogin.aspx%26response_type%3Dcode%2520id_token%26scope%3Dopenid%2520profile%2520offline_access%26state%3DNjM4Nzg3NzkwNzc0NjIzMjE0MTgyOTczMDcyMg%253D%253D%26responseMode%3Dfragment%26nonce%3DNjM4Nzg3NzkwNzc0NjIzMjE0MTgyOTczMDcyMg%253D%253D")
 
                 WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.ID, 'Username')))
                 print("Login page loaded.")
 
-                username = os.getenv("LOGIN_USERNAME") or "REPLACE_ME"
-                password = os.getenv("LOGIN_PASSWORD") or "REPLACE_ME"
+                username = os.getenv("LOGIN_USERNAME")
+                password = os.getenv("LOGIN_PASSWORD")
 
                 driver.find_element(By.ID, 'Username').send_keys(username)
                 driver.find_element(By.ID, 'Password').send_keys(password)
@@ -79,15 +75,16 @@ def check_for_table_records():
                 )
                 login_button.click()
 
+                # Wait until redirected to dashboard page
                 WebDriverWait(driver, 60).until(
-                    EC.presence_of_element_located((By.TAG_NAME, 'body'))
+                    EC.url_contains("/Insights-coquitlam/Home/Index")
                 )
-                print("Logged in successfully.")
+                print("Login dashboard loaded. Now navigating to Job Shop...")
 
-                print("Navigating to the Job Shop page...")
-                driver.get("REPLACE_ME_WITH_JOB_SHOP_URL")
+                driver.get("https://bc38.atrieveerp.com/coquitlam/servlet/Broker?env=ads&template=ads.JobShop1.xml")
 
                 WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, 'table')))
+                driver.save_screenshot("after_jobshop_navigation.png")
                 print("Table found on the page.")
 
                 page_source = driver.page_source
@@ -110,7 +107,7 @@ def check_for_table_records():
                 print(f"Attempt {attempt + 1} failed: {str(e)}")
                 driver.save_screenshot(f"screenshot_attempt_{attempt + 1}.png")
                 if attempt == retry_count - 1:
-                    send_sms(f"Login failed after {retry_count} attempts.")
+                    send_sms("Login failed after 3 attempts.")
                 time.sleep(5)
 
     except Exception as e:
