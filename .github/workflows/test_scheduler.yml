@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log time
-        run: 'echo "⏰ Hello! Time now: $(date -u)'
+        run: 'echo "⏰ Hello! Time now: $(date -u)"'
