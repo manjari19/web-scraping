@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '* * * * *'
+    - cron: '* * * * *'  # Runs every minute
   workflow_dispatch:
 
 jobs:
@@ -29,7 +29,13 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y chromium-browser chromium-chromedriver
-        sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+
+        # Only create symlink if it doesn't already exist
+        if [ ! -f /usr/bin/chromedriver ]; then
+          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+        fi
+
+        sudo chmod +x /usr/bin/chromedriver
 
     - name: Run script
       env:
