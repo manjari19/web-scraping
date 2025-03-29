@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '* * * * *'
+    - cron: '* * * * *'  # Every minute
   workflow_dispatch:
 
 jobs:
@@ -40,6 +40,11 @@ jobs:
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
+
+    - name: List files in current directory (debug)
+      run: |
+        echo "📂 Listing files at: $(pwd)"
+        ls -lah
 
     - name: Run script
       env:
