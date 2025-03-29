@@ -104,7 +104,7 @@ def check_for_table_records():
                     if len(rows) > 1:
                         send_sms(f"📋 Records found! Number of rows: {len(rows) - 1}")
                     else:
-                        send_sms("📭 No new records found.")
+                        print("📭 No new records found.")
                 else:
                     send_sms("⚠️ Table not found on Job Shop page.")
 
