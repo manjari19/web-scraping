@@ -25,20 +25,11 @@ jobs:
       run: |
         pip install selenium beautifulsoup4 twilio
 
-    - name: Install specific Chrome & ChromeDriver versions
+    - name: Install Chromium and ChromeDriver
       run: |
         sudo apt update
-        sudo apt install -y wget unzip
-
-        # Install Chrome 113
-        wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_113.0.5672.92-1_amd64.deb
-        sudo apt install -y ./google-chrome-stable_113.0.5672.92-1_amd64.deb
-
-        # Install ChromeDriver 113
-        wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+        sudo apt install -y chromium-browser chromium-chromedriver
+        sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
 
     - name: Run script
       env:
