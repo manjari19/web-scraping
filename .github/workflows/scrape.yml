@@ -25,25 +25,17 @@ jobs:
       run: |
         pip install selenium beautifulsoup4 twilio
 
-    - name: Install Chrome & ChromeDriver
+    - name: Install specific Chrome & ChromeDriver versions
       run: |
         sudo apt update
-        sudo apt install -y wget unzip curl gnupg jq
+        sudo apt install -y wget unzip
 
-        # Install Chrome
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo apt install -y ./google-chrome-stable_current_amd64.deb
+        # Install Chrome 113
+        wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_113.0.5672.92-1_amd64.deb
+        sudo apt install -y ./google-chrome-stable_113.0.5672.92-1_amd64.deb
 
-        # Get the FULL 4-part version number of Chrome
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-        echo "Detected full Chrome version: $CHROME_VERSION"
-
-        # Use major.minor.build only for the Chromedriver lookup
-        BASE_VERSION=$(echo "$CHROME_VERSION" | cut -d. -f1-3)
-        DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$BASE_VERSION")
-        echo "Using ChromeDriver version: $DRIVER_VERSION"
-
-        wget "https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip"
+        # Install ChromeDriver 113
+        wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
