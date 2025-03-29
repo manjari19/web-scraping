@@ -1,9 +1,12 @@
 name: Run Job Shop Checker
 
 on:
+  push:
+    branches:
+      - main       # Runs on every push to main
   schedule:
     - cron: '*/30 * * * *'  # Every 30 minutes
-  workflow_dispatch:        # Allow manual runs
+  workflow_dispatch:        # Allow manual runs from the UI
 
 jobs:
   run-script:

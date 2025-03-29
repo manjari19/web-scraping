@@ -7,14 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from bs4 import BeautifulSoup
 from twilio.rest import Client
-from dotenv import load_dotenv
 import os
 import time
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Twilio setup from .env
+# Get secrets from environment (injected by GitHub Actions)
 account_sid = os.getenv("ACCOUNT_SID")
 auth_token = os.getenv("AUTH_TOKEN")
 twilio_phone_number = os.getenv("TWILIO_PHONE")
@@ -24,32 +20,27 @@ client = Client(account_sid, auth_token)
 
 def send_sms(message):
     short_msg = message if len(message) <= 1500 else message[:1500] + "..."
-    print(f"Simulated SMS: {short_msg}")
-    # To actually send SMS, uncomment below:
+    print(f"Sending SMS: {short_msg}")
     client.messages.create(
         body=short_msg,
         from_=twilio_phone_number,
         to=your_phone_number
-     )
-
-def get_chrome_driver_path():
-    return "/opt/homebrew/bin/chromedriver"
+    )
 
 def check_for_table_records():
     driver = None
 
     try:
-        chrome_driver_path = get_chrome_driver_path()
-
         # Set up Chrome options
         options = Options()
+        options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--remote-debugging-port=9222")
         options.add_argument('--disable-gpu')
-        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+        options.add_argument(
+            'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
 
-        service = Service(chrome_driver_path)
+        service = Service("/usr/local/bin/chromedriver")
         driver = webdriver.Chrome(service=service, options=options)
 
         retry_count = 3
@@ -75,7 +66,6 @@ def check_for_table_records():
                 )
                 login_button.click()
 
-                # Wait until redirected to dashboard page
                 WebDriverWait(driver, 60).until(
                     EC.url_contains("/Insights-coquitlam/Home/Index")
                 )
@@ -84,7 +74,6 @@ def check_for_table_records():
                 driver.get("https://bc38.atrieveerp.com/coquitlam/servlet/Broker?env=ads&template=ads.JobShop1.xml")
 
                 WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, 'table')))
-                driver.save_screenshot("after_jobshop_navigation.png")
                 print("Table found on the page.")
 
                 page_source = driver.page_source
@@ -105,7 +94,6 @@ def check_for_table_records():
 
             except (TimeoutException, NoSuchElementException) as e:
                 print(f"Attempt {attempt + 1} failed: {str(e)}")
-                driver.save_screenshot(f"screenshot_attempt_{attempt + 1}.png")
                 if attempt == retry_count - 1:
                     send_sms("Login failed after 3 attempts.")
                 time.sleep(5)
