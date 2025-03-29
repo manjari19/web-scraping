@@ -1,51 +1,48 @@
 name: Run Job Shop Checker
 
 on:
-  workflow_dispatch:         # Manual trigger
-  workflow_call:             # Enables GitHub to recognize it as a callable workflow
+  workflow_dispatch:        # Manual trigger
+  workflow_call:            # Reusable workflow support
   push:
     branches:
       - main
   schedule:
-     - cron: '* * * * *'  # Every 5 minutes
-
-
+    - cron: '* * * * *'     # Every 1 minute
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        pip install selenium beautifulsoup4 twilio
+      - name: Install dependencies
+        run: |
+          pip install selenium beautifulsoup4 twilio
 
-    - name: Install Chromium and ChromeDriver
-      run: |
-        sudo apt update
-        sudo apt install -y chromium-browser chromium-chromedriver
+      - name: Install Chromium and ChromeDriver
+        run: |
+          sudo apt update
+          sudo apt install -y chromium-browser chromium-chromedriver
+          # Create symlink if not already present
+          if [ ! -f /usr/bin/chromedriver ]; then
+            sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          fi
+          sudo chmod +x /usr/bin/chromedriver
 
-        # Ensure correct permissions and symlink only if needed
-        if [ ! -f /usr/bin/chromedriver ]; then
-          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
-        fi
-        sudo chmod +x /usr/bin/chromedriver
-
-    - name: Run script
-      env:
-        LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
-        LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
-        ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
-        AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-        TWILIO_PHONE: ${{ secrets.TWILIO_PHONE }}
-        YOUR_PHONE: ${{ secrets.YOUR_PHONE }}
-      run: |
-        python3 webscrap.py
+      - name: Run webscrap.py script
+        env:
+          LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
+          LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+          ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          TWILIO_PHONE: ${{ secrets.TWILIO_PHONE }}
+          YOUR_PHONE: ${{ secrets.YOUR_PHONE }}
+        run: |
+          python3 webscrap.py
