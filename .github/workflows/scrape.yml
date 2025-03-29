@@ -1,0 +1,47 @@
+name: Run Job Shop Checker
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:        # Allow manual runs
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install selenium beautifulsoup4 twilio
+
+    - name: Install Chrome + ChromeDriver
+      run: |
+        sudo apt update
+        sudo apt install -y wget unzip xvfb libxi6 libgconf-2-4 libnss3 libxss1 libappindicator1 libindicator7 libasound2 fonts-liberation libgbm1
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt -f install -y
+        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
+        DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+        wget https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+
+    - name: Run script
+      env:
+        LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
+        LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+        ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+        AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        TWILIO_PHONE: ${{ secrets.TWILIO_PHONE }}
+        YOUR_PHONE: ${{ secrets.YOUR_PHONE }}
+      run: |
+        xvfb-run python webscrap.py
