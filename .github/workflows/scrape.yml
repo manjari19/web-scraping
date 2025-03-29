@@ -1,12 +1,14 @@
 name: Run Job Shop Checker
 
 on:
+  workflow_dispatch:         # Manual trigger
+  workflow_call:             # Enables GitHub to recognize it as a callable workflow
   push:
     branches:
       - main
   schedule:
-    - cron: '* * * * *'  # Runs every minute
-  workflow_dispatch:
+    - cron: '* * * * *'      # Every minute
+
 
 jobs:
   run-script:
