@@ -50,4 +50,4 @@ jobs:
         TWILIO_PHONE: ${{ secrets.TWILIO_PHONE }}
         YOUR_PHONE: ${{ secrets.YOUR_PHONE }}
       run: |
-        python webscrap.py
+        python3 webscrap.py
