@@ -33,3 +33,9 @@ screenshot_attempt_*.png
 *.sqlite3
 *.db
 output.csv
+
+# Prevent committing binaries
+chromedriver
+chromedriver.exe
+chromedriver-*
+chromedriver-linux64/
