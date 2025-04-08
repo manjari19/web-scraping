@@ -26,14 +26,21 @@ jobs:
         run: |
           pip install selenium beautifulsoup4 twilio
 
-      - name: Install Chromium and ChromeDriver
+      - name: Install Chrome and ChromeDriver manually
         run: |
-          sudo apt update
-          sudo apt install -y chromium-browser chromium-chromedriver
-          # Create symlink if not already present
-          if [ ! -f /usr/bin/chromedriver ]; then
-            sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
-          fi
+          # Install Chrome
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
+          # Get exact Chrome version
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          echo "Installed Chrome version: $CHROME_VERSION"
+
+          # Download matching ChromeDriver
+          DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          wget https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/bin/chromedriver
           sudo chmod +x /usr/bin/chromedriver
 
       - name: Run webscrap.py script
