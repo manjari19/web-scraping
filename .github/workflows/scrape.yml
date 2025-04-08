@@ -26,12 +26,19 @@ jobs:
         run: |
           pip install selenium beautifulsoup4 twilio
 
+      - name: Clean up any stale chromedriver in repo
+        run: |
+          find . -name 'chromedriver' -type f -delete || true
+
       - name: Install Chrome v135 and ChromeDriver v135 for Linux
         run: |
           # Install Chrome v135 for Linux (Testing channel)
           wget https://storage.googleapis.com/chrome-for-testing-public/135.0.7049.42/linux64/chrome-linux64.zip
           unzip chrome-linux64.zip
           sudo mv chrome-linux64 /opt/chrome
+
+          # Replace existing symlink if present
+          sudo rm -f /usr/bin/google-chrome
           sudo ln -s /opt/chrome/chrome /usr/bin/google-chrome
 
           # Install matching ChromeDriver v135
